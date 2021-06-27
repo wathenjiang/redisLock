@@ -53,18 +53,16 @@ func TestRedisLock_Lock(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		go func() {
-			success, err := lock.Lock()
+			err := lock.Lock()
 			if err != nil {
 				fmt.Println(err.Error())
 				return
 			}
-			if success {
-				fmt.Println("get lock")
-				defer func() {
-					lock.Unlock()
-					fmt.Println("release the lock")
-				}()
-			}
+			fmt.Println("get lock")
+			defer func() {
+				lock.Unlock()
+				fmt.Println("release the lock")
+			}()
 
 			time.Sleep(time.Second * 2)
 			defer wg.Done()
@@ -83,19 +81,16 @@ func TestRedisLock_LockWithTimeout(t *testing.T) {
 
 	for i := 0; i < 20; i++ {
 		go func() {
-			success, err := lock.LockWithTimeout(3 * time.Second)
+			err := lock.LockWithTimeout(3 * time.Second)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
 			}
-			if success {
-				fmt.Println("get lock")
-				defer func() {
-					lock.Unlock()
-					fmt.Println("release the lock")
-				}()
-
-			}
+			fmt.Println("get lock")
+			defer func() {
+				lock.Unlock()
+				fmt.Println("release the lock")
+			}()
 			time.Sleep(time.Second * 4)
 			defer wg.Done()
 		}()
@@ -112,15 +107,13 @@ func TestRedisLock_SpinLock(t *testing.T) {
 	wg.Add(20)
 	for i := 0; i < 20; i++ {
 		go func() {
-			success, err := lock.SpinLock(5)
+			err := lock.SpinLock(5)
 			if err != nil {
 				fmt.Println(err.Error())
 				return
 			}
-			if success {
-				fmt.Println("get lock")
-				defer lock.Unlock()
-			}
+			fmt.Println("get lock")
+			defer lock.Unlock()
 			defer func() {
 				fmt.Println("release the lock")
 			}()

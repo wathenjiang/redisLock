@@ -17,8 +17,9 @@ type RedisLock struct {
 }
 
 const (
-	PubSubPrefix      = "redis_lock_"
-	DefaultExpiration = 30
+	PubSubPrefix        = "redis_lock_"
+	DefaultExpiration   = 30
+	DefaultSpinInterval = 100
 )
 
 func NewRedisLock(redisClient *redis.Client, key string, value string) *RedisLock {
@@ -50,19 +51,19 @@ func (lock *RedisLock) TryLock() (bool, error) {
 }
 
 // Lock blocked until get lock
-func (lock *RedisLock) Lock() (bool, error) {
+func (lock *RedisLock) Lock() error {
 	for {
 		success, err := lock.TryLock()
 		if err != nil {
-			return false, err
+			return err
 		}
 		if success {
-			return true, nil
+			return nil
 		}
 		if !success {
 			err := lock.subscribeLock()
 			if err != nil {
-				return false, err
+				return err
 			}
 		}
 	}
@@ -93,37 +94,38 @@ func (lock *RedisLock) Unlock() error {
 }
 
 // LockWithTimeout blocked until get lock or timeout
-func (lock *RedisLock) LockWithTimeout(d time.Duration) (bool, error) {
+func (lock *RedisLock) LockWithTimeout(d time.Duration) error {
 	timeNow := time.Now()
 	for {
 		success, err := lock.TryLock()
 		if err != nil {
-			return false, err
+			return err
 		}
 		if success {
-			return true, nil
+			return nil
 		}
 		deltaTime := d - time.Since(timeNow)
 		if !success {
 			err := lock.subscribeLockWithTimeout(deltaTime)
 			if err != nil {
-				return false, err
+				return err
 			}
 		}
 	}
 }
 
-func (lock *RedisLock) SpinLock(times int) (bool, error) {
+func (lock *RedisLock) SpinLock(times int) error {
 	for i := 0; i < times; i++ {
 		success, err := lock.TryLock()
 		if err != nil {
-			return false, err
+			return err
 		}
 		if success {
-			return true, nil
+			return nil
 		}
+		time.Sleep(time.Millisecond * DefaultSpinInterval)
 	}
-	return false, fmt.Errorf("max spin times reached")
+	return fmt.Errorf("max spin times reached")
 }
 
 // subscribeLock blocked until lock is released

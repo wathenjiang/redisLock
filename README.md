@@ -53,8 +53,9 @@ redisLock supports the following features:
 -  Avoid deadlock by [Redis EXPIRE](https://redis.io/commands/expire)
 -  Avoid concurrency issues by automatic renew
 
-But here are the **unsupported** features:
+Here are the **unsupported** features:
 
-- Reentrant mutex is not supported, just like [sync.muetx](https://golang.org/pkg/sync/)
-- Fairness of lock is not supported, may causes starving problem
+- Reentrant mutex is NOT supported, just like [sync.mutex](https://golang.org/pkg/sync/)
+- Fairness of mutex is NOT supported, may cause starving problem in extreme cases
 
+[中文版](https://spongecaptain.cool/post/go/redislock/)

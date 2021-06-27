@@ -49,7 +49,7 @@ defer func() {
 redisLock supports the following features:
 
 -  Implements Atomic by Lua scripts
--  Achieve efficient communication by [Redis Pub/Sub](https://redis.io/topics/pubsub)
+-  Achieves efficient communication by [Redis Pub/Sub](https://redis.io/topics/pubsub)
 -  Avoid deadlock by [Redis EXPIRE](https://redis.io/commands/expire)
 -  Avoid concurrency issues by automatic renew
 

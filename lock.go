@@ -17,7 +17,7 @@ type RedisLock struct {
 }
 
 const (
-	PubSubPrefix        = "redis_lock_"
+	PubSubPrefix        = "{redis_lock}_"
 	DefaultExpiration   = 30
 	DefaultSpinInterval = 100
 )
